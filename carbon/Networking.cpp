@@ -70,7 +70,7 @@ SOCKET startup_server(PCSTR sPort)
 	return ListenSocket;
 }
 
-int wait_for_command(SOCKET ListenSocket) 
+SOCKET wait_for_session(SOCKET ListenSocket) 
 {
 	/* This function starts listening for communication 
 	*  on the ListenSocket Socket.
@@ -93,7 +93,12 @@ int wait_for_command(SOCKET ListenSocket)
 	if (ClientSocket == INVALID_SOCKET) {
 		return NULL;
 	}
+	return ClientSocket;
 
+}
+
+char* receive_on_socket(SOCKET ClientSocket)
+{
 	char recvbuf[BUFLEN];
 	int iResult, iSendResult;
 	int recvbuflen = BUFLEN;
@@ -102,13 +107,22 @@ int wait_for_command(SOCKET ListenSocket)
 	if (iResult > 0)
 	{
 		std::cout << "Recieved! " << recvbuf;
-		closesocket(ClientSocket);
-		return 1;
+		return recvbuf;
 	}
 	else
 	{
 		return NULL;
 	}
+}
+
+int send_on_socket(SOCKET ClientSocket, const char* sData)
+{
+	int iSendResult;
+	iSendResult = send(ClientSocket, sData, (int)strlen(sData), 0);
+	if (iSendResult == SOCKET_ERROR) {
+		return 1;
+	}
+	return 0;
 
 }
 

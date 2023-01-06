@@ -19,15 +19,38 @@
 #pragma comment(lib, "Ws2_32.lib") // Required library for winsock
 
 
-int command_loop()
+int parse_command(char* sRawCommand) 
 {
 	int iCommand;
+	iCommand = (int)sRawCommand[0];
+	return iCommand;
+}
+
+
+int do_command(int iCommand, char* args) 
+{
+	printf("command is %d \n", iCommand);
+	return 0;
+
+}
+
+
+int command_loop()
+{
+	int iCommand = 0;
+	char* recvbuf;
+	int iCommandResult;
+	int iSendResult;
 	SOCKET ListenSocket = INVALID_SOCKET;
+	SOCKET SessionSocket;
 	ListenSocket = startup_server("27017");
 
 	do{
-
-		iCommand = wait_for_command(ListenSocket);
+		SessionSocket = wait_for_session(ListenSocket);
+		recvbuf = receive_on_socket(SessionSocket);
+		iCommand = parse_command(recvbuf);
+		iCommandResult = do_command(iCommand, NULL);
+		iSendResult = send_on_socket(SessionSocket, "SUCCESS!");
 
 	} while (iCommand > 0);
 	std::cout << "done!";
