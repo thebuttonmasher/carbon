@@ -9,7 +9,6 @@
 #include <WS2tcpip.h>
 #include <stdio.h>
 #include <iostream>
-#include "Networking.h"
 
 #pragma comment(lib, "Ws2_32.lib") // Required library for winsock
 
@@ -34,6 +33,8 @@ int __cdecl main(int argc, char** argv)
         printf("usage: %s server-name port-number command optional=command-args\n", argv[0]);
         return 1;
     }
+
+    printf("server: %s \n port: %s \n command: %s \n", argv[1], argv[2], argv[3]);
     const char* sendbuf = argv[3];
 
     // Initialize Winsock

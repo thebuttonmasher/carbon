@@ -99,8 +99,8 @@ SOCKET wait_for_session(SOCKET ListenSocket)
 
 char* receive_on_socket(SOCKET ClientSocket)
 {
-	char recvbuf[BUFLEN];
-	int iResult, iSendResult;
+	char* recvbuf = (char*) malloc(BUFLEN * sizeof(char));
+	int iResult;
 	int recvbuflen = BUFLEN;
 	// Receive until the peer shuts down the connection
 	iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);

@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4e13d938-b091-4a29-95f6-2425ba34a6ad}</ProjectGuid>
-    <RootNamespace>carbon</RootNamespace>
+    <ProjectGuid>{b738ed77-f0ae-4e09-9a55-8868496137e5}</ProjectGuid>
+    <RootNamespace>Client</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,11 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Networking.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Networking.h" />
+    <ClCompile Include="..\carbon\Client.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
