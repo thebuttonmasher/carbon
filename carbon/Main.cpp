@@ -23,7 +23,7 @@ int parse_command(char* sRawCommand)
 {
 	int iCommand;
 	iCommand = (int)sRawCommand[0];
-	return iCommand;
+	return iCommand - 48; 
 }
 
 
@@ -49,6 +49,7 @@ int command_loop()
 		SessionSocket = wait_for_session(ListenSocket);
 		recvbuf = receive_on_socket(SessionSocket);
 		iCommand = parse_command(recvbuf);
+		free(recvbuf); // After we parsed the command we don't need it
 		iCommandResult = do_command(iCommand, NULL);
 		iSendResult = send_on_socket(SessionSocket, "SUCCESS!");
 

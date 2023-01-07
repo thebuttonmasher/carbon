@@ -95,6 +95,17 @@ int __cdecl main(int argc, char** argv)
         WSACleanup();
         return 1;
     }
+    // Receive output from our command
+    iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+    if (iResult > 0)
+        printf("Command output: %s\n", recvbuf);
+    else
+        printf("recv failed with error: %d\n", WSAGetLastError());
 
+    // cleanup
+    closesocket(ConnectSocket);
+    WSACleanup();
+
+    return 0;
 
 }
