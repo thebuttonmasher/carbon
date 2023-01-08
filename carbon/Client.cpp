@@ -27,6 +27,7 @@ int __cdecl main(int argc, char** argv)
     char recvbuf[BUFLEN];
     int iResult;
     int recvbuflen = BUFLEN;
+    const char* sendbuf;
 
     // Validate the parameters
     if (argc < 3) {
@@ -35,7 +36,19 @@ int __cdecl main(int argc, char** argv)
     }
 
     printf("server: %s \n port: %s \n command: %s \n", argv[1], argv[2], argv[3]);
-    const char* sendbuf = argv[3];
+    if (argv[4] != NULL)
+    {
+        char sTempSendBuf[BUFLEN];
+        strcpy(sTempSendBuf, argv[3]);
+        strcat(sTempSendBuf, " ");
+        strcat(sTempSendBuf, argv[4]);
+        sendbuf = sTempSendBuf;
+    }
+    else
+    {
+        sendbuf = argv[3];
+    }
+    
 
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);

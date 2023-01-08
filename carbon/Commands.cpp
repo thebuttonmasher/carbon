@@ -13,7 +13,7 @@
 
 #define BUFLEN 512
 
-char* get_file_content(char* sPath)
+char* get_file_content(char* sPath, DWORD* pSizeRead)
 {
 	HANDLE hFile;
 	int bResult;
@@ -62,6 +62,7 @@ char* get_file_content(char* sPath)
 		tempFileContent += nBytesRead; 
 
 	} while (bResult && nBytesRead != 0); // Read untill EOF
+	*pSizeRead = nFileSize; 
 	CloseHandle(hFile);
 	free(pReadBuffer);
 	return pFileContent;

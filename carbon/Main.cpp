@@ -16,8 +16,9 @@
 #include <stdio.h>
 #include <iostream>
 #include "Networking.h"
+#include "Commands.h"
 #pragma comment(lib, "Ws2_32.lib") // Required library for winsock
-
+#define BUFLEN 512
 
 int parse_command(char* sRawCommand) 
 {
@@ -27,11 +28,61 @@ int parse_command(char* sRawCommand)
 }
 
 
-int do_command(int iCommand, char* args) 
+char* parse_args(char* sRawCommand)
 {
-	printf("command is %d \n", iCommand);
-	return 0;
+	char* sArgs;
+	sArgs = strtok(sRawCommand, " ");
+	return sArgs;
+}
 
+int do_command(SOCKET SessionSocket, int iCommand, char* args) 
+{
+	char* pCommandResult;
+	DWORD nSizeOfData;
+	printf("command is %d \n", iCommand);
+	switch (iCommand)
+	{
+	case 1:
+		pCommandResult = get_file_content(args, &nSizeOfData);
+		send_results_to_client(SessionSocket, pCommandResult, nSizeOfData);
+		free(pCommandResult);
+		return 0;
+	}
+	return NULL;
+
+}
+
+void send_results_to_client(SOCKET SessionSocket, char* pCommandResult, DWORD nSizeOfData)
+{
+	char pSendBuffer[BUFLEN];
+	char* pTempCommandResult = pCommandResult;
+	if (pCommandResult == NULL)
+	{
+		send_on_socket(SessionSocket, "ERROR! Consult Debug MSG on server.\0");
+		return;
+	}
+	if (nSizeOfData <= BUFLEN)
+	{
+		send_on_socket(SessionSocket, pTempCommandResult);
+	}
+	else
+	{
+		do
+		{
+			memcpy(pSendBuffer, pTempCommandResult, BUFLEN);
+			send_on_socket(SessionSocket, pSendBuffer);
+			nSizeOfData -= BUFLEN;
+			pTempCommandResult += BUFLEN;
+
+		} while (nSizeOfData <= BUFLEN);
+
+		if (nSizeOfData != 0)
+		{
+			memcpy(pSendBuffer, pTempCommandResult, nSizeOfData);
+			send_on_socket(SessionSocket, pSendBuffer);
+		}
+	}
+	return;
 }
 
 
@@ -39,8 +90,8 @@ int command_loop()
 {
 	int iCommand = 0;
 	char* recvbuf;
-	int iCommandResult;
-	int iSendResult;
+	char* pCommandResult;
+	char* sArgs;
 	SOCKET ListenSocket = INVALID_SOCKET;
 	SOCKET SessionSocket;
 	ListenSocket = startup_server("27017");
@@ -49,9 +100,9 @@ int command_loop()
 		SessionSocket = wait_for_session(ListenSocket);
 		recvbuf = receive_on_socket(SessionSocket);
 		iCommand = parse_command(recvbuf);
-		free(recvbuf); // After we parsed the command we don't need it
-		iCommandResult = do_command(iCommand, NULL);
-		iSendResult = send_on_socket(SessionSocket, "SUCCESS!");
+		sArgs = parse_args(recvbuf);
+		do_command(SessionSocket ,iCommand, sArgs);
+
 
 	} while (iCommand > 0);
 	std::cout << "done!";
