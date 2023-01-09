@@ -32,6 +32,7 @@ int __cdecl main(int argc, char** argv)
     // Validate the parameters
     if (argc < 3) {
         printf("usage: %s server-name port-number command optional=command-args\n", argv[0]);
+        printf("command list= \n \"1\" : get contents of file, path must be supplied as \"command-args\"! \n");
         return 1;
     }
 
@@ -39,14 +40,18 @@ int __cdecl main(int argc, char** argv)
     if (argv[4] != NULL)
     {
         char sTempSendBuf[BUFLEN];
-        strcpy(sTempSendBuf, argv[3]);
-        strcat(sTempSendBuf, " ");
-        strcat(sTempSendBuf, argv[4]);
+        strcpy_s(sTempSendBuf, argv[3]);
+        strcat_s(sTempSendBuf, " ");
+        strcat_s(sTempSendBuf, argv[4]);
+        strcat_s(sTempSendBuf, "\0");
         sendbuf = sTempSendBuf;
     }
     else
     {
-        sendbuf = argv[3];
+        char sTempSendBuf[BUFLEN];
+        strcpy_s(sTempSendBuf, argv[3]);
+        strcat_s(sTempSendBuf, "\0");
+        sendbuf = sTempSendBuf;
     }
     
 
@@ -111,9 +116,17 @@ int __cdecl main(int argc, char** argv)
     // Receive output from our command
     iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
     if (iResult > 0)
+    {
+        if (iResult < 512)
+        {
+            recvbuf[iResult] = '\0'; // For some reason you cant send \0 over winsock,
+        }      						 // so we have to add the null byte ourself.
         printf("Command output: %s\n", recvbuf);
+    }
     else
+    {
         printf("recv failed with error: %d\n", WSAGetLastError());
+    }
 
     // cleanup
     closesocket(ConnectSocket);

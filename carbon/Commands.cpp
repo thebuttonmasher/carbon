@@ -15,6 +15,15 @@
 
 char* get_file_content(char* sPath, DWORD* pSizeRead)
 {
+	/*
+	* This function gets a file's content, and it's size, using winapi.
+	* 
+	* param sPath: char*, The path to the file to get.
+	* param pSizeRead: [out] DWORD, the amount of data read from the file, no change if an error has occured.
+	* 
+	* return: char*, the file's content.
+	*		  NULL, if an error has occured.
+	*/
 	HANDLE hFile;
 	int bResult;
 	DWORD nBytesRead;
@@ -26,6 +35,7 @@ char* get_file_content(char* sPath, DWORD* pSizeRead)
 	{
 		return NULL;
 	}
+	printf("path: %s \n", sPath);
 	hFile = CreateFileA(sPath, 
 					    GENERIC_READ, // We only need read access
 					    FILE_SHARE_READ, // We don't want to block other programs from accessing
@@ -37,12 +47,17 @@ char* get_file_content(char* sPath, DWORD* pSizeRead)
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
+		printf("cant open file: INVALID HANDLE VALUE \n");
+		DWORD iError = GetLastError();
+		printf("getlasterror = %d", iError);
+
 		return NULL;
 	}
 
 	nFileSize = GetFileSize(hFile, NULL); // This gives a max size of ~4.2gigs, which is more than enough.
 	if (nFileSize == INVALID_FILE_SIZE)
 	{
+		printf("cant get file size: check permissions.");
 		CloseHandle(hFile);
 		return NULL;
 	}
@@ -55,6 +70,7 @@ char* get_file_content(char* sPath, DWORD* pSizeRead)
 		bResult = ReadFile(hFile, pReadBuffer, BUFLEN, &nBytesRead, NULL);
 		if (!bResult)
 		{
+			printf("can't read file");
 			CloseHandle(hFile);
 			return NULL;
 		}

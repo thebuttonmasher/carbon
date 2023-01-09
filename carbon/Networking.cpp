@@ -99,13 +99,24 @@ SOCKET wait_for_session(SOCKET ListenSocket)
 
 char* receive_on_socket(SOCKET ClientSocket)
 {
+	/*
+	* This function handles receiving information from a SOCKET.
+	* 
+	* param ClientSocket: a SOCKET object. It should already be connected to another socket!
+	* 
+	* return: char*, the data recieved from the socket.
+	*         NULL, if there was an error.
+	*/
 	char* recvbuf = (char*) malloc(BUFLEN * sizeof(char));
 	int iResult;
 	int recvbuflen = BUFLEN;
-	// Receive until the peer shuts down the connection
 	iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
 	if (iResult > 0)
 	{
+		if (iResult < 512)
+		{
+			recvbuf[iResult] = '\0'; // For some reason you cant send \0 over winsock,
+		}      						 // so we have to add the null byte ourself.
 		std::cout << "Recieved! " << recvbuf;
 		return recvbuf;
 	}
@@ -117,6 +128,15 @@ char* receive_on_socket(SOCKET ClientSocket)
 
 int send_on_socket(SOCKET ClientSocket, const char* sData)
 {
+	/*
+	* This function handles sending information to a SOCKET.
+	*
+	* param ClientSocket: a SOCKET object. It should already be connected to another socket!
+	* param sData: const char*, the data to send through the connection.
+	* 
+	* return: 0 if successful, 1 if an error has occured.
+	*  
+	*/
 	int iSendResult;
 	iSendResult = send(ClientSocket, sData, (int)strlen(sData), 0);
 	if (iSendResult == SOCKET_ERROR) {
@@ -128,6 +148,11 @@ int send_on_socket(SOCKET ClientSocket, const char* sData)
 
 void cleanup_winsock(SOCKET ListenSocket) 
 {
+	/*
+	* This function closes a SOCKET and calls the winsock "GC" function.
+	* 
+	* param ListenSocket: SOCKET, the SOCKET object you wish to close.
+	*/
 	closesocket(ListenSocket);
 	WSACleanup();
 	return;
