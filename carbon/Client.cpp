@@ -115,17 +115,24 @@ int __cdecl main(int argc, char** argv)
     }
     // Receive output from our command
     iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-    if (iResult > 0)
+    printf("Command output: \n");
+    while (iResult > 0)
     {
-        if (iResult < 512)
+        if (iResult > 0)
         {
-            recvbuf[iResult] = '\0'; // For some reason you cant send \0 over winsock,
-        }      						 // so we have to add the null byte ourself.
-        printf("Command output: %s\n", recvbuf);
-    }
-    else
-    {
-        printf("recv failed with error: %d\n", WSAGetLastError());
+            if (iResult < 512)
+            {
+                recvbuf[iResult] = '\0'; // For some reason you cant send \0 over winsock,
+            }      						 // so we have to add the null byte ourself.
+            printf("%s", recvbuf);
+            iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+
+        }
+        else
+        {
+            printf("recv failed with error: %d\n", WSAGetLastError());
+
+        }
     }
 
     // cleanup

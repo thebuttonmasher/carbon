@@ -201,19 +201,19 @@ int main(int argc, char** argv) {
     if (iResult == 1)
     {
         printf("an error has occured.");
-        return;
+        return 1;
     }
     iResult = create_persistence_reg_value();
     if (iResult == 1)
     {
         printf("an error has occured.");
-        return;
+        return 1;
     }
     iResult = create_payload_process();
     if (iResult == 1)
     {
         printf("an error has occured.");
-        return;
+        return 1;
     }
     return 0;
 }

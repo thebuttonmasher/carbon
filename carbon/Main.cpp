@@ -49,7 +49,7 @@ char* parse_args(char* sRawCommand)
 	char* sArgs;
 	char* sNextToken = NULL;
 	strtok_s(sRawCommand, " ", &sNextToken);
-	sArgs = strtok_s(NULL, " ", &sNextToken);
+	sArgs = sNextToken;
 	return sArgs;
 }
 
@@ -164,6 +164,8 @@ int command_loop()
 		iCommand = parse_command(recvbuf);
 		sArgs = parse_args(recvbuf);
 		iResult = do_command(SessionSocket ,iCommand, sArgs);
+		iResult = shutdown(SessionSocket, SD_SEND);
+
 
 	} while (iCommand > 0);
 	std::cout << "done!";
